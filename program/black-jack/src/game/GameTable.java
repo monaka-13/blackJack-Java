@@ -1,20 +1,18 @@
 package game;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameTable {
 	public void facilitateGame() {
 		//参加者セット
-//		List<Gamer> gamers = new ArrayList<Gamer>();
-//		gamers.add(new Gamer("player"));
-//		gamers.add(new Gamer("dealer"));
-		Gamer player=new Gamer("player");
-		Gamer dealer=new Gamer("dealer");
+		//		List<Gamer> gamers = new ArrayList<Gamer>();
+		//		gamers.add(new Gamer("player"));
+		//		gamers.add(new Gamer("dealer"));
+		Gamer player = new Gamer("player");
+		Gamer dealer = new Gamer("dealer");
 
 		boolean turnEnd = false;
 
@@ -47,22 +45,17 @@ public class GameTable {
 			if (player.getPoints() > 21) {
 				turnEnd = true;
 			} else {
-				String choose = "Y";//入力
+				String choose = input();//入力
 				if (choose.equals("Y")) {
 					Card drawCard = getCard(player, deck);
 					plusPoint(player, drawCard);
-
 					openDeal(player, drawCard);
 					pointAmount(player);
-
-					turnEnd = true;//一回だけ実行(削除)
 				} else if (choose.equals("N")) {
 					turnEnd = true;
 				}
-				System.out.println(player.getGamerName() + "'s turn end");
 			}
 		}
-
 
 		//ディーラーは17になるまでカードを引き続ける
 		for (int i = 0; dealer.getPoints() < 17;) {
@@ -93,13 +86,13 @@ public class GameTable {
 	}
 
 	private void message(Gamer gamer) {
-		String msg="";
-		if(gamer.getPoints()==21) {
-			msg=" BlackJack!";
-		}else if(gamer.getPoints()>21) {
-			msg=" Burst";
+		String msg = "";
+		if (gamer.getPoints() == 21) {
+			msg = " BlackJack!";
+		} else if (gamer.getPoints() > 21) {
+			msg = " Burst";
 		}
-		System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints()+msg);
+		System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints() + msg);
 	}
 
 	private Card getCard(Gamer gamer, List<Card> deck) {
@@ -161,19 +154,19 @@ public class GameTable {
 		return card;
 	}
 
-	public String inputCommand(String msg) {
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(isr);
-		System.out.println(msg);
+	private static String input() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		String a = "";
+		boolean b = false;
+		while (b == false) {
+			System.out.print("カードを引きますか？(Y/N)");
 
-		String str = null;
-		try {
-			str = br.readLine();
-			br.close();
-		} catch (IOException e) {
-			return "";
+			// キーボード入力を受け付ける
+			a = scanner.next();
+			b = a.equals("Y") || a.equals("N");
 		}
-
-		return str;
+		return a;
 	}
+
 }
