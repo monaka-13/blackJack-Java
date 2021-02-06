@@ -9,23 +9,39 @@ public class Card {
 	}
 
 	public Card(int _number, String _suit) {
-		this.number = _number;
+		//スートの設定（設定なし）
 		this.suit = _suit;
+
+		//カード点数の設定（J,Q,Kは10点）
 		switch (_number) {
-		case 1:
-			numberMark = "A";
-			break;
 		case 11:
-			numberMark = "J";
-			break;
 		case 12:
-			numberMark = "Q";
-			break;
 		case 13:
-			numberMark = "K";
+			this.number=10;
 			break;
 		default:
-			numberMark = number.toString();
+			this.number = _number;
+		}
+
+		//表示の設定(J,Q,K,A)
+		switch (_number) {
+		case 1:
+			this.numberMark = " A";
+			break;
+		case 11:
+			this.numberMark = " J";
+			break;
+		case 12:
+			this.numberMark = " Q";
+			break;
+		case 13:
+			this.numberMark = " K";
+			break;
+		case 10:
+			this.numberMark="10";
+			break;
+		default:
+			this.numberMark = " "+number.toString();
 		}
 	}
 
