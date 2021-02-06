@@ -10,142 +10,73 @@ import java.util.List;
 public class GameTable {
 	public void facilitateGame() {
 		//参加者セット
-		List<Gamer> gamers = new ArrayList<Gamer>();
-		gamers.add(new Gamer("player"));
-		gamers.add(new Gamer("dealer"));
+//		List<Gamer> gamers = new ArrayList<Gamer>();
+//		gamers.add(new Gamer("player"));
+//		gamers.add(new Gamer("dealer"));
+		Gamer player=new Gamer("player");
+		Gamer dealer=new Gamer("dealer");
+
+		boolean turnEnd = false;
 
 		//山札用意
 		List<Card> deck = prepareDeck();
 
 		//手札配布
 		for (int j = 0; j < 2; j++) {//カード枚数分ループ
-			//カードを引く
-			Card drawCard = drawCard(deck);
 
-			//行動者の手札に加える
-			gamers.get(0).addHands(drawCard);
+			Card drawCard = getCard(player, deck);
+			plusPoint(player, drawCard);
+			openDeal(player, drawCard);
 
-			//手札の点数を出す
-			int point = gamers.get(0).getPoints() + drawCard.getNumber();
-			//行動者の点数に加算する
-			gamers.get(0).setPoints(point);
-
-			//行動者の手札を表示する
-			System.out.println(gamers.get(0).getGamerName() + ":" + gamers.get(0).getHands().size() + "枚目");
-			System.out.println("┏━┓");
-			//			if (i == 1 && j == 1) {
-			//				System.out.println("┃" + "?" + " ┃");
-			//				System.out.println("┃" + " ?" + "┃");
-			//			} else {
-			System.out.println("┃" + drawCard.getSuit() + " ┃");
-			System.out.println("┃" + drawCard.getNumberMark() + "┃");
-			//			}
-			System.out.println("┗━┛");
 		}
-		//		if (i == 1) {
-		//			System.out.println(gamers.get(i).getGamerName() + "の合計:" + "?");
-		//		} else {
-		System.out.println(gamers.get(0).getGamerName() + "の合計:" + gamers.get(0).getPoints());
-		//		}
-		System.out.println("----------");
+		pointAmount(player);
 
-		boolean turnEnd = false;
-		//21を超える→終了
-		while (turnEnd == false) {
-			if (gamers.get(0).getPoints() > 21) {
+		//ディーラーが準備する
+		for (int j = 0; j < 2; j++) {//カード枚数分ループ
+			Card drawCard = getCard(dealer, deck);
+
+			plusPoint(dealer, drawCard);
+
+			openDeal(dealer, drawCard);
+		}
+		pointAmount(dealer);
+
+		//プレイヤーカード追加
+
+		while (turnEnd == false) {//21を超える→終了
+			if (player.getPoints() > 21) {
 				turnEnd = true;
 			} else {
-				//TODO プレイヤーはカードを追加できる
 				String choose = "Y";//入力
 				if (choose.equals("Y")) {
-					//カードを引く
-					Card drawCard = drawCard(deck);
+					Card drawCard = getCard(player, deck);
+					plusPoint(player, drawCard);
 
-					//行動者の手札に加える
-					gamers.get(0).addHands(drawCard);
+					openDeal(player, drawCard);
+					pointAmount(player);
 
-					//手札の点数を出す
-					int point = gamers.get(0).getPoints() + drawCard.getNumber();
-					//行動者の点数に加算する
-					gamers.get(0).setPoints(point);
-
-					//行動者の手札を表示する
-					System.out
-							.println(gamers.get(0).getGamerName() + ":" + gamers.get(0).getHands().size() + "枚目");
-					System.out.println("┏━┓");
-					//			if (i == 1 && j == 1) {
-					//				System.out.println("┃" + "?" + " ┃");
-					//				System.out.println("┃" + " ?" + "┃");
-					//			} else {
-					System.out.println("┃" + drawCard.getSuit() + " ┃");
-					System.out.println("┃" + drawCard.getNumberMark() + "┃");
-					//			}
-					System.out.println("┗━┛");
-
-					//		if (i == 1) {
-					//			System.out.println(gamers.get(i).getGamerName() + "の合計:" + "?");
-					//		} else {
-					System.out.println(gamers.get(0).getGamerName() + "の合計:" + gamers.get(0).getPoints());
-					//		}
-					System.out.println("----------");
 					turnEnd = true;//一回だけ実行(削除)
 				} else if (choose.equals("N")) {
 					turnEnd = true;
 				}
-				System.out.println(gamers.get(0).getGamerName() + "'s turn end");
+				System.out.println(player.getGamerName() + "'s turn end");
 			}
 		}
 
-		//TODO ディーラーが準備する
-		for (int j = 0; j < 2; j++) {//カード枚数分ループ
-			//カードを引く
-			Card drawCard = drawCard(deck);
 
-			//行動者の手札に加える
-			gamers.get(1).addHands(drawCard);
+		//ディーラーは17になるまでカードを引き続ける
+		for (int i = 0; dealer.getPoints() < 17;) {
+			Card drawCard = getCard(player, deck);
 
-			//手札の点数を出す
-			int point = gamers.get(1).getPoints() + drawCard.getNumber();
-			//行動者の点数に加算する
-			gamers.get(1).setPoints(point);
-
-			//行動者の手札を表示する
-			System.out.println(gamers.get(1).getGamerName() + ":" + gamers.get(1).getHands().size() + "枚目");
-			System.out.println("┏━┓");
-			if (gamers.get(1).getGamerName().equals("dealer") && j == 1) {
-				System.out.println("┃" + "?" + " ┃");
-				System.out.println("┃" + " ?" + "┃");
-			} else {
-				System.out.println("┃" + drawCard.getSuit() + " ┃");
-				System.out.println("┃" + drawCard.getNumberMark() + "┃");
-			}
-			System.out.println("┗━┛");
+			plusPoint(dealer, drawCard);
 		}
-		if (gamers.get(1).getGamerName().equals("dealer")) {
-			System.out.println(gamers.get(1).getGamerName() + "の合計:" + "?");
-		} else {
-			System.out.println(gamers.get(0).getGamerName() + "の合計:" + gamers.get(0).getPoints());
-		}
-		System.out.println("----------");
 
-		//TODO ディーラーは17になるまでカードを引き続ける
-		for (int i = 0; gamers.get(1).getPoints() < 17;) {
-			//カードを引く
-			Card drawCard = drawCard(deck);
+		//プレイヤーとディーラーの値を比べて、勝敗を決定する
+		message(player);
+		message(dealer);
 
-			//行動者の手札に加える
-			gamers.get(1).addHands(drawCard);
-
-			//手札の点数を出す
-			int point = gamers.get(1).getPoints() + drawCard.getNumber();
-			//行動者の点数に加算する
-			gamers.get(1).setPoints(point);
-		}
-		System.out.println(gamers.get(1).getGamerName() + "の合計:" + gamers.get(1).getPoints());
-
-		//TODO プレイヤーとディーラーの値を比べて、勝敗を決定する
-		int ply0 = gamers.get(0).getPoints();
-		int ply1 = gamers.get(1).getPoints();
+		int ply0 = player.getPoints();
+		int ply1 = dealer.getPoints();
 		if (ply0 > 21) {
 			ply0 = 0;
 		}
@@ -153,12 +84,62 @@ public class GameTable {
 			ply1 = 0;
 		}
 		if (ply0 > ply1) {
-			System.out.println(gamers.get(0).getGamerName() + " wins");
+			System.out.println(player.getGamerName() + " wins");
 		} else if (ply0 < ply1) {
-			System.out.println(gamers.get(0).getGamerName() + " lose");
+			System.out.println(player.getGamerName() + " lose");
 		} else {
 			System.out.println("draw");
 		}
+	}
+
+	private void message(Gamer gamer) {
+		String msg="";
+		if(gamer.getPoints()==21) {
+			msg=" BlackJack!";
+		}else if(gamer.getPoints()>21) {
+			msg=" Burst";
+		}
+		System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints()+msg);
+	}
+
+	private Card getCard(Gamer gamer, List<Card> deck) {
+		//カードを引く
+		Card drawCard = drawCard(deck);
+
+		//行動者の手札に加える
+		gamer.addHands(drawCard);
+
+		return drawCard;
+	}
+
+	private void plusPoint(Gamer gamer, Card drawCard) {
+		//手札の点数を出す
+		int point = gamer.getPoints() + drawCard.getNumber();
+		//行動者の点数に加算する
+		gamer.setPoints(point);
+	}
+
+	private void openDeal(Gamer gamer, Card drawCard) {
+		//行動者の手札を表示する
+		System.out.println(gamer.getGamerName() + ":" + gamer.getHands().size() + "枚目");
+		System.out.println("┏━┓");
+		if (gamer.getGamerName().equals("dealer")) {
+			System.out.println("┃" + "?" + " ┃");
+			System.out.println("┃" + " ?" + "┃");
+		} else {
+			System.out.println("┃" + drawCard.getSuit() + " ┃");
+			System.out.println("┃" + drawCard.getNumberMark() + "┃");
+		}
+		System.out.println("┗━┛");
+	}
+
+	private void pointAmount(Gamer gamer) {
+		if (gamer.getGamerName().equals("dealer")) {
+			System.out.println(gamer.getGamerName() + "の合計:" + "?");
+		} else {
+			System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints());
+		}
+		System.out.println("----------");
 	}
 
 	public List<Card> prepareDeck() {//山札を用意する
