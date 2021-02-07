@@ -10,7 +10,7 @@ public class GameController {
 	public void loop() {//Game Loop 本体
 		List<Gamer> gamers = init();
 		Gamer dealer = gamers.get(gamers.size() - 1);
-		Integer gameTime = GameTime();
+		Integer gameTime = inputNumber("プレイ回数を入力してください");
 		for (int i = 0; i < gameTime; i++) {
 			System.out.println("★Game(" + (i + 1) + "/" + gameTime + ")Start!");
 			List<Card> deck = initGame();
@@ -23,19 +23,15 @@ public class GameController {
 		}
 	}
 
-	private int GameTime() {
-		return 2;
-	}
-
 	private List<Gamer> init() {//最初の1回のみ行う処理
 		//参加者セット
 		List<Gamer> gamers = new ArrayList<Gamer>();
 		//参加人数を入力
-		int playersAmount = inputPlayers();
+		int playersAmount = inputNumber("参加人数を入力してください");
 		for (int i = 0; i < playersAmount; i++) {
+			System.out.println((i + 1) + "人目のプレイヤーの名前を入力してください");
 			gamers.add(new Gamer(inputName()));
 		}
-		//FIXME 開発用短縮:gamers.add(new Gamer("player"));
 		gamers.add(new Gamer("dealer"));
 		return gamers;
 	}
@@ -133,7 +129,7 @@ public class GameController {
 		Gamer dealer = gamers.get(gamers.size() - 1);
 
 		for (int i = 0; i < gamers.size(); i++) {
-			message(gamers.get(i));
+			addStatusMessage(gamers.get(i));
 		}
 
 		for (int i = 0; i < gamers.size() - 1; i++) {
@@ -172,24 +168,31 @@ public class GameController {
 		}
 	}
 
-	private void message(Gamer gamer) {
-		String msg = "";
-		if (gamer.getPoints() == 21) {
-			msg = " BlackJack!";
-		} else if (gamer.getPoints() > 21) {
-			msg = " Burst";
+	public List<Card> prepareDeck() {//山札を用意する
+		String[] suit = { "♠", "♥", "♦", "♣" };
+		List<Card> deck = new ArrayList<Card>();
+		for (int n = 1; n <= 13; n++) {
+			for (int s = 0; s < 4; s++) {
+				Card card = new Card(n, suit[s]);
+				deck.add(card);
+			}
 		}
-		System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints() + msg);
+		Collections.shuffle(deck);
+		return deck;
 	}
 
 	private Card getCard(Gamer gamer, List<Card> deck) {
 		//カードを引く
 		Card drawCard = drawCard(deck);
-
 		//行動者の手札に加える
-		gamer.addHands(drawCard);//TODO ぬるぽ
-
+		gamer.addHands(drawCard);
 		return drawCard;
+	}
+
+	public Card drawCard(List<Card> deck) {//カードを引く
+		Card card = deck.get(0);
+		deck.remove(0);
+		return card;
 	}
 
 	private void plusPoint(Gamer gamer, Card drawCard) {
@@ -197,14 +200,6 @@ public class GameController {
 		int point = gamer.getPoints() + drawCard.getNumber();
 		//行動者の点数に加算する
 		gamer.setPoints(point);
-	}
-
-	private void plusAceAmount(Gamer gamer, Card drawCard) {
-		int aceAmount = gamer.getAceAmount();
-		if (drawCard.getNumber() == 11) {
-			aceAmount++;
-		}
-		gamer.setAceAmount(aceAmount);
 	}
 
 	private void openDealAll(Gamer gamer) {
@@ -239,26 +234,25 @@ public class GameController {
 		}
 	}
 
-	public List<Card> prepareDeck() {//山札を用意する
-		String[] suit = { "♠", "♥", "♦", "♣" };
-		List<Card> deck = new ArrayList<Card>();
-		for (int n = 1; n <= 13; n++) {
-			for (int s = 0; s < 4; s++) {
-				Card card = new Card(n, suit[s]);
-				deck.add(card);
-			}
+	private void plusAceAmount(Gamer gamer, Card drawCard) {
+		int aceAmount = gamer.getAceAmount();
+		if (drawCard.getNumber() == 11) {
+			aceAmount++;
 		}
-		Collections.shuffle(deck);
-		return deck;
+		gamer.setAceAmount(aceAmount);
 	}
 
-	public Card drawCard(List<Card> deck) {//カードを引く
-		Card card = deck.get(0);
-		deck.remove(0);
-		return card;
+	private void addStatusMessage(Gamer gamer) {
+		String msg = "";
+		if (gamer.getPoints() == 21) {
+			msg = " BlackJack!";
+		} else if (gamer.getPoints() > 21) {
+			msg = " Burst";
+		}
+		System.out.println(gamer.getGamerName() + "の合計:" + gamer.getPoints() + msg);
 	}
 
-	private static String inputYN() {
+	public String inputYN() {
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String a = "";
@@ -275,18 +269,7 @@ public class GameController {
 		return a;
 	}
 
-	private Integer inputPlayers() {
-		@SuppressWarnings("resource")
-		Scanner scanner = new Scanner(System.in);
-		Integer a = 0;
-		System.out.println("何人でプレイしますか？");
-
-		// キーボード入力を受け付ける
-		a = Integer.parseInt(scanner.next());
-		return a;
-	}
-
-	private String inputName() {
+	public String inputName() {
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String a = "";
@@ -295,6 +278,14 @@ public class GameController {
 		// キーボード入力を受け付ける
 		a = scanner.next();
 		return a;
+	}
+
+	public Integer inputNumber(String msg) {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		System.out.println(msg);
+		// キーボード入力を受け付ける
+		return Integer.parseInt(scanner.next());
 	}
 
 }
