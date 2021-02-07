@@ -6,6 +6,9 @@ public class Card {
 	private String numberMark;
 
 	public Card() {
+		this.number=0;
+		this.suit="";
+		this.numberMark="";
 	}
 
 	public Card(int _number, String _suit) {

@@ -10,18 +10,31 @@ public class GameController {
 	public void loop() {//Game Loop 本体
 		List<Gamer> gamers = init();
 		Gamer dealer = gamers.get(gamers.size() - 1);
-		List<Card> deck = initGame();
-		turnPlayersFirst(gamers, deck);
-		turnDealerFirst(dealer, deck);
-		turnPlayers(gamers, deck);
-		turnDealer(dealer, deck);
-		showResult(gamers);
+		Integer gameTime = GameTime();
+		for (int i = 0; i < gameTime; i++) {
+			System.out.println("★Game(" + (i + 1) + "/" + gameTime + ")Start!");
+			List<Card> deck = initGame();
+			turnPlayersFirst(gamers, deck);
+			turnDealerFirst(dealer, deck);
+			turnPlayers(gamers, deck);
+			turnDealer(dealer, deck);
+			showResult(gamers);
+			resetGameParameter(gamers);
+		}
+	}
+
+	private int GameTime() {
+		return 2;
 	}
 
 	private List<Gamer> init() {//最初の1回のみ行う処理
 		//参加者セット
 		List<Gamer> gamers = new ArrayList<Gamer>();
-		gamers.add(new Gamer(inputName()));
+		//参加人数を入力
+		int playersAmount = inputPlayers();
+		for (int i = 0; i < playersAmount; i++) {
+			gamers.add(new Gamer(inputName()));
+		}
 		//FIXME 開発用短縮:gamers.add(new Gamer("player"));
 		gamers.add(new Gamer("dealer"));
 		return gamers;
@@ -30,7 +43,6 @@ public class GameController {
 	List<Card> initGame() { // ゲーム初期化時に行う処理
 		//山札用意
 		List<Card> deck = prepareDeck();
-		System.out.println("★GameStart!");
 		return deck;
 	}
 
@@ -86,7 +98,7 @@ public class GameController {
 
 						if (player.getPoints() > 21 && player.getAceAmount() > 0) {
 							int minusAce = player.getPoints() - 10;
-							int aceAmount=player.getAceAmount()-1;
+							int aceAmount = player.getAceAmount() - 1;
 							player.setPoints(minusAce);
 							player.setAceAmount(aceAmount);
 						}
@@ -135,15 +147,29 @@ public class GameController {
 			if (dealerPoints > 21) {
 				dealerPoints = 0;
 			}
+			int score = player.getScore();
 			if (playerPoints > dealerPoints) {
 				System.out.println(player.getGamerName() + " wins!");
+				score += 1;
 			} else if (playerPoints < dealerPoints) {
 				System.out.println(player.getGamerName() + " lose");
+				score -= 1;
 			} else {
 				System.out.println(player.getGamerName() + " is draw");
 			}
+			player.setScore(score);
+			System.out.println(player.getGamerName() + "'s score is " + player.getScore());
 		}
+	}
 
+	private void resetGameParameter(List<Gamer> gamers) {
+		for (int i = 0; i < gamers.size(); i++) {
+			Gamer gamer = gamers.get(i);
+			gamer.setHands(new ArrayList<Card>());
+			gamer.setPoints(0);
+			gamer.setAceAmount(0);
+			gamer.setTurnEnd(false);
+		}
 	}
 
 	private void message(Gamer gamer) {
@@ -161,7 +187,7 @@ public class GameController {
 		Card drawCard = drawCard(deck);
 
 		//行動者の手札に加える
-		gamer.addHands(drawCard);
+		gamer.addHands(drawCard);//TODO ぬるぽ
 
 		return drawCard;
 	}
@@ -236,18 +262,27 @@ public class GameController {
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String a = "";
-		boolean b = false;
 		while (true) {
 			System.out.println("カードを引きますか？(Y/N)");
 
 			// キーボード入力を受け付ける
 			a = scanner.next();
-			b = a.equals("Y") || a.equals("N");
-			if (b == true) {
+			if (a.equals("Y") || a.equals("N")) {
 				break;
 			}
 			System.out.println("認識できませんでした。");
 		}
+		return a;
+	}
+
+	private Integer inputPlayers() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		Integer a = 0;
+		System.out.println("何人でプレイしますか？");
+
+		// キーボード入力を受け付ける
+		a = Integer.parseInt(scanner.next());
 		return a;
 	}
 

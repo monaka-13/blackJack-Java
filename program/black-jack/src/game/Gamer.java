@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Gamer {
-	private String gamerName;
+	private String gamerName = "";
 	private int score = 0;
 
-	private List<Card> hands;
+	private List<Card> hands = new ArrayList<Card>();
 	private int points = 0;
 	private int aceAmount = 0;
 	private boolean turnEnd = false;
