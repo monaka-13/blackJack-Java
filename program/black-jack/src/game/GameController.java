@@ -21,7 +21,8 @@ public class GameController {
 	private List<Gamer> init() {//最初の1回のみ行う処理
 		//参加者セット
 		List<Gamer> gamers = new ArrayList<Gamer>();
-		gamers.add(new Gamer("player"));//FIXME 戻す　gamers.add(new Gamer(inputName()));
+		gamers.add(new Gamer(inputName()));
+		//FIXME 開発用短縮:gamers.add(new Gamer("player"));
 		gamers.add(new Gamer("dealer"));
 		return gamers;
 	}
@@ -41,7 +42,7 @@ public class GameController {
 			for (int j = 0; j < 2; j++) {//カード枚数分ループ
 				Card drawCard = getCard(player, deck);
 				plusPoint(player, drawCard);
-
+				plusAceAmount(player, drawCard);
 			}
 			openDealAll(player);
 			pointAmount(player);
@@ -55,6 +56,7 @@ public class GameController {
 		for (int j = 0; j < 2; j++) {//カード枚数分ループ
 			Card drawCard = getCard(dealer, deck);
 			plusPoint(dealer, drawCard);
+			plusAceAmount(dealer, drawCard);
 			openDealDealer(dealer, drawCard);
 		}
 		pointAmount(dealer);
@@ -68,12 +70,27 @@ public class GameController {
 
 			while (player.isTurnEnd() == false) {
 				if (player.getPoints() > 21) {//21を超える→例外がない限り終了
-					player.setTurnEnd(true);
+					int aceAmount = player.getAceAmount();
+					if (aceAmount > 0) {
+						int minusAce = player.getPoints() - 10;
+						player.setPoints(minusAce);
+					} else {
+						player.setTurnEnd(true);
+					}
 				} else {
 					String choose = inputYN();//入力
 					if (choose.equals("Y")) {
 						Card drawCard = getCard(player, deck);
 						plusPoint(player, drawCard);
+						plusAceAmount(player, drawCard);
+
+						if (player.getPoints() > 21 && player.getAceAmount() > 0) {
+							int minusAce = player.getPoints() - 10;
+							int aceAmount=player.getAceAmount()-1;
+							player.setPoints(minusAce);
+							player.setAceAmount(aceAmount);
+						}
+
 						openDealAll(player);
 						pointAmount(player);
 					} else if (choose.equals("N")) {
@@ -91,6 +108,7 @@ public class GameController {
 		while (dealer.getPoints() < 17) {
 			Card drawCard = getCard(dealer, deck);
 			plusPoint(dealer, drawCard);
+			plusAceAmount(dealer, drawCard);
 		}
 		openDealAll(dealer);
 
@@ -153,6 +171,14 @@ public class GameController {
 		int point = gamer.getPoints() + drawCard.getNumber();
 		//行動者の点数に加算する
 		gamer.setPoints(point);
+	}
+
+	private void plusAceAmount(Gamer gamer, Card drawCard) {
+		int aceAmount = gamer.getAceAmount();
+		if (drawCard.getNumber() == 11) {
+			aceAmount++;
+		}
+		gamer.setAceAmount(aceAmount);
 	}
 
 	private void openDealAll(Gamer gamer) {

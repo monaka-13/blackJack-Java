@@ -5,9 +5,11 @@ import java.util.List;
 
 public class Gamer {
 	private String gamerName;
+	private int score = 0;
+
 	private List<Card> hands;
 	private int points = 0;
-	private int score = 0;
+	private int aceAmount = 0;
 	private boolean turnEnd = false;
 
 	//コンストラクタ
@@ -29,6 +31,14 @@ public class Gamer {
 		this.gamerName = gamerName;
 	}
 
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
 	public List<Card> getHands() {
 		return hands;
 	}
@@ -45,12 +55,12 @@ public class Gamer {
 		this.points = points;
 	}
 
-	public int getScore() {
-		return score;
+	public int getAceAmount() {
+		return aceAmount;
 	}
 
-	public void setScore(int score) {
-		this.score = score;
+	public void setAceAmount(int aceAmount) {
+		this.aceAmount = aceAmount;
 	}
 
 	public boolean isTurnEnd() {
