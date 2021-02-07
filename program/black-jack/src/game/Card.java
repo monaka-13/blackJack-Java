@@ -14,6 +14,9 @@ public class Card {
 
 		//カード点数の設定（J,Q,Kは10点）
 		switch (_number) {
+		case 1:
+			this.number=11;
+			break;
 		case 11:
 		case 12:
 		case 13:

@@ -8,6 +8,7 @@ public class Gamer {
 	private List<Card> hands;
 	private int points = 0;
 	private int score = 0;
+	private boolean turnEnd = false;
 
 	//コンストラクタ
 	public Gamer() {
@@ -52,6 +53,15 @@ public class Gamer {
 		this.score = score;
 	}
 
+	public boolean isTurnEnd() {
+		return turnEnd;
+	}
+
+	public void setTurnEnd(boolean turnEnd) {
+		this.turnEnd = turnEnd;
+	}
+
+	//メソッド
 	public void addHands(Card card) {
 		this.hands.add(card);
 	}

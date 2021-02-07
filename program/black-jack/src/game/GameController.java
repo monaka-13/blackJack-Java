@@ -5,24 +5,40 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-public class GameTable {
-	public void facilitateGame() {
+public class GameController {
+
+	public void loop() {//Game Loop 本体
+		List<Gamer> gamers = init();
+		Gamer dealer = gamers.get(gamers.size() - 1);
+		List<Card> deck = initGame();
+		turnPlayersFirst(gamers, deck);
+		turnDealerFirst(dealer, deck);
+		turnPlayers(gamers, deck);
+		turnDealer(dealer, deck);
+		showResult(gamers);
+	}
+
+	private List<Gamer> init() {//最初の1回のみ行う処理
 		//参加者セット
-		List<Gamer> players = new ArrayList<Gamer>();
-		players.add(new Gamer(inputName()));
-		Gamer dealer = new Gamer("dealer");
+		List<Gamer> gamers = new ArrayList<Gamer>();
+		gamers.add(new Gamer("player"));//FIXME 戻す　gamers.add(new Gamer(inputName()));
+		gamers.add(new Gamer("dealer"));
+		return gamers;
+	}
 
-		boolean turnEnd = false;
-
+	List<Card> initGame() { // ゲーム初期化時に行う処理
 		//山札用意
 		List<Card> deck = prepareDeck();
 		System.out.println("★GameStart!");
-		for (int i = 0; i < players.size(); i++) {
+		return deck;
+	}
+
+	void turnPlayersFirst(List<Gamer> players, List<Card> deck) {// players初回処理
+		for (int i = 0; i < players.size() - 1; i++) {
 			Gamer player = players.get(i);
 			System.out.println("★---" + player.getGamerName() + " カード配布---");
 			//手札配布
 			for (int j = 0; j < 2; j++) {//カード枚数分ループ
-
 				Card drawCard = getCard(player, deck);
 				plusPoint(player, drawCard);
 
@@ -31,25 +47,28 @@ public class GameTable {
 			pointAmount(player);
 		}
 
+	}
+
+	void turnDealerFirst(Gamer dealer, List<Card> deck) { // dealer初回処理
 		//ディーラーが準備する
 		System.out.println("★---" + dealer.getGamerName() + " カード配布---");
 		for (int j = 0; j < 2; j++) {//カード枚数分ループ
 			Card drawCard = getCard(dealer, deck);
-
 			plusPoint(dealer, drawCard);
-
 			openDealDealer(dealer, drawCard);
 		}
 		pointAmount(dealer);
+	}
 
+	void turnPlayers(List<Gamer> players, List<Card> deck) { // プレイヤーのターン
 		//プレイヤーカード追加
-		for (int i = 0; i < players.size(); i++) {
+		for (int i = 0; i < players.size() - 1; i++) {
 			Gamer player = players.get(i);
 			System.out.println("★---" + player.getGamerName() + " カード追加---");
 
-			while (turnEnd == false) {//21を超える→終了
-				if (player.getPoints() > 21) {
-					turnEnd = true;
+			while (player.isTurnEnd() == false) {
+				if (player.getPoints() > 21) {//21を超える→例外がない限り終了
+					player.setTurnEnd(true);
 				} else {
 					String choose = inputYN();//入力
 					if (choose.equals("Y")) {
@@ -58,12 +77,15 @@ public class GameTable {
 						openDealAll(player);
 						pointAmount(player);
 					} else if (choose.equals("N")) {
-						turnEnd = true;
+						player.setTurnEnd(true);
 					}
 				}
 			}
 		}
 
+	}
+
+	void turnDealer(Gamer dealer, List<Card> deck) { // ディーラーのターン
 		//ディーラーは17になるまでカードを引き続ける
 		System.out.println("★---" + dealer.getGamerName() + " カード追加---");
 		while (dealer.getPoints() < 17) {
@@ -72,33 +94,38 @@ public class GameTable {
 		}
 		openDealAll(dealer);
 
+	}
+
+	void showResult(List<Gamer> gamers) { // 結果表示
 		//プレイヤーとディーラーの値を比べて、勝敗を決定する
 		System.out.println("★---ショーダウン---");
-		for (int i = 0; i < players.size(); i++) {
-			Gamer player = players.get(i);
-			message(player);
+		Gamer player = new Gamer();
+		Gamer dealer = gamers.get(gamers.size() - 1);
+
+		for (int i = 0; i < gamers.size(); i++) {
+			message(gamers.get(i));
 		}
-		message(dealer);
 
-		for (int i = 0; i < players.size(); i++) {
-			Gamer player = players.get(i);
+		for (int i = 0; i < gamers.size() - 1; i++) {
+			player = gamers.get(i);
 
-			int ply0 = player.getPoints();
-			int ply1 = dealer.getPoints();
-			if (ply0 > 21) {
-				ply0 = 0;
+			int playerPoints = player.getPoints();
+			int dealerPoints = dealer.getPoints();
+			if (playerPoints > 21) {
+				playerPoints = 0;
 			}
-			if (ply1 > 21) {
-				ply1 = 0;
+			if (dealerPoints > 21) {
+				dealerPoints = 0;
 			}
-			if (ply0 > ply1) {
+			if (playerPoints > dealerPoints) {
 				System.out.println(player.getGamerName() + " wins!");
-			} else if (ply0 < ply1) {
+			} else if (playerPoints < dealerPoints) {
 				System.out.println(player.getGamerName() + " lose");
 			} else {
-				System.out.println("draw");
+				System.out.println(player.getGamerName() + " is draw");
 			}
 		}
+
 	}
 
 	private void message(Gamer gamer) {

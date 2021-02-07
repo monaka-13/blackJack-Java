@@ -1,11 +1,11 @@
 package main;
 
-import game.GameTable;
+import game.GameController;
 
 public class Main {
 	public static void main(String[] args) {
 		System.out.println("blackJack");
-		GameTable game=new GameTable();
-		game.facilitateGame();
+		GameController game=new GameController();
+		game.loop();
 	}
 }
