@@ -11,6 +11,7 @@ public class Gamer {
 	private int points = 0;
 	private int aceAmount = 0;
 	private boolean turnEnd = false;
+	private boolean blackJack = false;
 
 	//コンストラクタ
 	public Gamer() {
@@ -69,6 +70,14 @@ public class Gamer {
 
 	public void setTurnEnd(boolean turnEnd) {
 		this.turnEnd = turnEnd;
+	}
+
+	public boolean isBlackJack() {
+		return blackJack;
+	}
+
+	public void setBlackJack(boolean blackJack) {
+		this.blackJack = blackJack;
 	}
 
 	//メソッド

@@ -54,6 +54,7 @@ public class GameController {
 			}
 			openDealAll(player);
 			pointAmount(player);
+			isBlackJack(player);
 		}
 
 	}
@@ -68,6 +69,7 @@ public class GameController {
 			openDealDealer(dealer, drawCard);
 		}
 		pointAmount(dealer);
+		isBlackJack(dealer);
 	}
 
 	void turnPlayers(List<Gamer> players, List<Card> deck) { // プレイヤーのターン
@@ -125,11 +127,15 @@ public class GameController {
 	void showResult(List<Gamer> gamers) { // 結果表示
 		//プレイヤーとディーラーの値を比べて、勝敗を決定する
 		System.out.println("★---ショーダウン---");
-		Gamer player = new Gamer();
+		Gamer player = null;
 		Gamer dealer = gamers.get(gamers.size() - 1);
 
 		for (int i = 0; i < gamers.size(); i++) {
-			addStatusMessage(gamers.get(i));
+			Gamer gamer = gamers.get(i);
+			addStatusMessage(gamer);
+			if (gamer.getPoints() > 21) {
+				gamer.setPoints(0);
+			}
 		}
 
 		for (int i = 0; i < gamers.size() - 1; i++) {
@@ -137,16 +143,15 @@ public class GameController {
 
 			int playerPoints = player.getPoints();
 			int dealerPoints = dealer.getPoints();
-			if (playerPoints > 21) {
-				playerPoints = 0;
-			}
-			if (dealerPoints > 21) {
-				dealerPoints = 0;
-			}
 			int score = player.getScore();
+
 			if (playerPoints > dealerPoints) {
 				System.out.println(player.getGamerName() + " wins!");
-				score += 1;
+				if (player.isBlackJack()) {
+					score += 2;
+				} else {
+					score += 1;
+				}
 			} else if (playerPoints < dealerPoints) {
 				System.out.println(player.getGamerName() + " lose");
 				score -= 1;
@@ -165,6 +170,7 @@ public class GameController {
 			gamer.setPoints(0);
 			gamer.setAceAmount(0);
 			gamer.setTurnEnd(false);
+			gamer.setBlackJack(false);
 		}
 	}
 
@@ -242,9 +248,15 @@ public class GameController {
 		gamer.setAceAmount(aceAmount);
 	}
 
+	private void isBlackJack(Gamer player) {
+		if (player.getPoints() == 21) {
+			player.setBlackJack(true);
+		}
+	}
+
 	private void addStatusMessage(Gamer gamer) {
 		String msg = "";
-		if (gamer.getPoints() == 21) {
+		if (gamer.isBlackJack()) {
 			msg = " BlackJack!";
 		} else if (gamer.getPoints() > 21) {
 			msg = " Burst";
