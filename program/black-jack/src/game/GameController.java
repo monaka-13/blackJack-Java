@@ -13,6 +13,7 @@ public class GameController {
 		Integer gameTime = inputNumber("プレイ回数を入力してください");
 		for (int i = 0; i < gameTime; i++) {
 			System.out.println("★Game(" + (i + 1) + "/" + gameTime + ")Start!");
+			betChip(gamers);
 			List<Card> deck = initGame();
 			turnPlayersFirst(gamers, deck);
 			turnDealerFirst(dealer, deck);
@@ -21,6 +22,7 @@ public class GameController {
 			showResult(gamers);
 			resetGameParameter(gamers);
 		}
+		gameResult(gamers);
 	}
 
 	private List<Gamer> init() {//最初の1回のみ行う処理
@@ -36,10 +38,16 @@ public class GameController {
 		return gamers;
 	}
 
+	private void betChip(List<Gamer> gamers) {
+		for (int i = 0; i < gamers.size() - 1; i++) {
+			Gamer player = gamers.get(i);
+			player.setBet(inputNumber(player.getGamerName() + "、チップを賭けてください(" + player.getScore() + ")まで"));
+		}
+	}
+
 	List<Card> initGame() { // ゲーム初期化時に行う処理
 		//山札用意
-		List<Card> deck = prepareDeck();
-		return deck;
+		return prepareDeck();
 	}
 
 	void turnPlayersFirst(List<Gamer> players, List<Card> deck) {// players初回処理
@@ -144,22 +152,22 @@ public class GameController {
 			int playerPoints = player.getPoints();
 			int dealerPoints = dealer.getPoints();
 			int score = player.getScore();
+			int bet = player.getBet();
 
 			if (playerPoints > dealerPoints) {
-				System.out.println(player.getGamerName() + " wins!");
 				if (player.isBlackJack()) {
-					score += 2;
+					score += bet * 1.5;
 				} else {
-					score += 1;
+					score += player.getBet();
 				}
+				System.out.println(player.getGamerName() + " wins!" + " (score:" + score + ")");
 			} else if (playerPoints < dealerPoints) {
-				System.out.println(player.getGamerName() + " lose");
-				score -= 1;
+				score -= player.getBet();
+				System.out.println(player.getGamerName() + " lose" + " (score:" + score + ")");
 			} else {
-				System.out.println(player.getGamerName() + " is draw");
+				System.out.println(player.getGamerName() + " is draw" + " (score:" + score + ")");
 			}
 			player.setScore(score);
-			System.out.println(player.getGamerName() + "'s score is " + player.getScore());
 		}
 	}
 
@@ -171,6 +179,30 @@ public class GameController {
 			gamer.setAceAmount(0);
 			gamer.setTurnEnd(false);
 			gamer.setBlackJack(false);
+			gamer.setBet(0);
+		}
+	}
+
+	private void gameResult(List<Gamer> gamers) {
+		if (gamers.size() > 2) {
+			int maxScore = 0;
+			for (int i = 0; i < gamers.size() - 1; i++) {
+				if (maxScore < gamers.get(i).getScore()) {
+					maxScore = gamers.get(i).getScore();
+				}
+			}
+			String winner = "";
+			for (int i = 0; i < gamers.size() - 1; i++) {
+				if (gamers.get(i).getScore() == maxScore) {
+					if (winner.equals("")) {
+						winner += gamers.get(i).getGamerName();
+					} else {
+						winner += " ・ " + gamers.get(i).getGamerName();
+					}
+				}
+			}
+
+			System.out.print("☆★☆The winner is ... " + winner + "(score:" + maxScore + ")☆★☆");
 		}
 	}
 
@@ -285,7 +317,6 @@ public class GameController {
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		String a = "";
-		System.out.println("プレイヤー名を入力してください");
 
 		// キーボード入力を受け付ける
 		a = scanner.next();

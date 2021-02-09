@@ -6,6 +6,7 @@ import java.util.List;
 public class Gamer {
 	private String gamerName = "";
 	private int score = 0;
+	private int bet = 0;
 
 	private List<Card> hands = new ArrayList<Card>();
 	private int points = 0;
@@ -21,6 +22,7 @@ public class Gamer {
 	public Gamer(String _gamerName) {
 		this();
 		this.gamerName = _gamerName;
+		this.score=500;
 	}
 
 	//getter,setter
@@ -38,6 +40,14 @@ public class Gamer {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public int getBet() {
+		return bet;
+	}
+
+	public void setBet(int bet) {
+		this.bet = bet;
 	}
 
 	public List<Card> getHands() {
