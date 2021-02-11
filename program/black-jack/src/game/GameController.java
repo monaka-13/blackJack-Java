@@ -8,21 +8,22 @@ import java.util.Scanner;
 public class GameController {
 
 	public void loop() {//Game Loop 本体
-		List<Gamer> gamers = init();
-		Gamer dealer = gamers.get(gamers.size() - 1);
+		Game game = new Game();
+		game.setGamers(init());
+		List<Gamer> gamers = game.getGamers();
 		Integer gameTime = inputNumber("プレイ回数を入力してください");
 		for (int i = 0; i < gameTime; i++) {
 			System.out.println("★Game(" + (i + 1) + "/" + gameTime + ")Start!");
 			betChip(gamers);
-			List<Card> deck = initGame();
-			turnPlayersFirst(gamers, deck);
-			turnDealerFirst(dealer, deck);
-			turnPlayers(gamers, deck);
-			turnDealer(dealer, deck);
-			showResult(gamers);
-			resetGameParameter(gamers);
+			game.setDeck(initGame());
+			turnPlayersFirst(game);
+			turnDealerFirst(game);
+			turnPlayers(game);
+			turnDealer(game);
+			showResult(game);
+			resetGameParameter(game);
 		}
-		gameResult(gamers);
+		gameResult(game);
 	}
 
 	private List<Gamer> init() {//最初の1回のみ行う処理
@@ -50,7 +51,9 @@ public class GameController {
 		return prepareDeck();
 	}
 
-	void turnPlayersFirst(List<Gamer> players, List<Card> deck) {// players初回処理
+	void turnPlayersFirst(Game game) {// players初回処理
+		List<Gamer> players = game.getGamers();
+		List<Card> deck = game.getDeck();
 		for (int i = 0; i < players.size() - 1; i++) {
 			Gamer player = players.get(i);
 			System.out.println("★---" + player.getGamerName() + " カード配布---");
@@ -67,7 +70,10 @@ public class GameController {
 
 	}
 
-	void turnDealerFirst(Gamer dealer, List<Card> deck) { // dealer初回処理
+	void turnDealerFirst(Game game) { // dealer初回処理
+		Gamer dealer = game.getGamers().get(game.getGamers().size()-1);
+		List<Card> deck = game.getDeck();
+
 		//ディーラーが準備する
 		System.out.println("★---" + dealer.getGamerName() + " カード配布---");
 		for (int j = 0; j < 2; j++) {//カード枚数分ループ
@@ -80,7 +86,9 @@ public class GameController {
 		isBlackJack(dealer);
 	}
 
-	void turnPlayers(List<Gamer> players, List<Card> deck) { // プレイヤーのターン
+	void turnPlayers(Game game) { // プレイヤーのターン
+		List<Gamer> players = game.getGamers();
+		List<Card> deck = game.getDeck();
 		//プレイヤーカード追加
 		for (int i = 0; i < players.size() - 1; i++) {
 			Gamer player = players.get(i);
@@ -120,7 +128,9 @@ public class GameController {
 
 	}
 
-	void turnDealer(Gamer dealer, List<Card> deck) { // ディーラーのターン
+	void turnDealer(Game game) { // ディーラーのターン
+		Gamer dealer = game.getGamers().get(game.getGamers().size()-1);
+		List<Card> deck = game.getDeck();
 		//ディーラーは17になるまでカードを引き続ける
 		System.out.println("★---" + dealer.getGamerName() + " カード追加---");
 		while (dealer.getPoints() < 17) {
@@ -132,7 +142,8 @@ public class GameController {
 
 	}
 
-	void showResult(List<Gamer> gamers) { // 結果表示
+	void showResult(Game game) { // 結果表示
+		List<Gamer> gamers = game.getGamers();
 		//プレイヤーとディーラーの値を比べて、勝敗を決定する
 		System.out.println("★---ショーダウン---");
 		Gamer player = null;
@@ -171,7 +182,8 @@ public class GameController {
 		}
 	}
 
-	private void resetGameParameter(List<Gamer> gamers) {
+	private void resetGameParameter(Game game) {
+		List<Gamer> gamers = game.getGamers();
 		for (int i = 0; i < gamers.size(); i++) {
 			Gamer gamer = gamers.get(i);
 			gamer.setHands(new ArrayList<Card>());
@@ -183,7 +195,8 @@ public class GameController {
 		}
 	}
 
-	private void gameResult(List<Gamer> gamers) {
+	private void gameResult(Game game) {
+		List<Gamer> gamers = game.getGamers();
 		if (gamers.size() > 2) {
 			int maxScore = 0;
 			for (int i = 0; i < gamers.size() - 1; i++) {
