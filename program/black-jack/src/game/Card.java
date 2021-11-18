@@ -7,6 +7,7 @@ public class Card {
 	private String test;
 	private String test3;
 	private String test5;
+	private String test6;
 
 	public Card() {
 		this.number=0;
