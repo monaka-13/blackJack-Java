@@ -5,6 +5,7 @@ public class Card {
 	private String suit;
 	private String numberMark;
 	private String test;
+	private String test2;
 
 	public Card() {
 		this.number=0;
