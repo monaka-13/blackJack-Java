@@ -5,7 +5,11 @@ public class Card {
 	private String suit;
 	private String numberMark;
 	private String test;
+<<<<<<< HEAD
 	private String test3;
+=======
+	private String test2;
+>>>>>>> 33292d7ba3cb55c176ad3fee0e9d1da040a2e7fd
 
 	public Card() {
 		this.number=0;
