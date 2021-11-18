@@ -4,6 +4,7 @@ public class Card {
 	private Integer number;
 	private String suit;
 	private String numberMark;
+	private String test;
 
 	public Card() {
 		this.number=0;
